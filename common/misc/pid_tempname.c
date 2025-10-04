@@ -1,6 +1,7 @@
 #include "pid_tempname.h"
 #include <stdio.h>
 #include <process.h>
+#include <windows.h>
 
 char temp_prefix[40];
 
@@ -34,6 +35,7 @@ const char *pid_tempname (const char *prefix)
     // Synchronization is not necessary either as there is no reason for the independent processes to wait...
     // The reason why this is an issue is because Windows filesystem is reflected immediately,
     // unlike inode in Linux that only properly deletes files when their link count is down to zero
-    sprintf(temp_prefix, "%s%d_", prefix, _getpid());
+    DWORD processId = GetProcessId(GetCurrentProcess());
+    sprintf(temp_prefix, "%s%d_", prefix, processId);
     return _tempnam(NULL, temp_prefix);
 }
